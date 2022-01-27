@@ -1,35 +1,9 @@
-import appConfig from '../config.json';
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        list-style: none;
-      }
-      body {
-        font-family: 'Open Sans', sans-serif;
-      }
-
-      html,
-      body,
-      #__next {
-        min-height: 100vh;
-        display: flex;
-        flex: 1;
-      }
-      #__next {
-        flex: 1;
-      }
-      #__next > * {
-        flex: 1;
-      }
-    `}</style>
-  );
-}
+import appConfig from '../config.json';
 
 function Title(props) {
   const Tag = props.tag || 'h1';
@@ -48,11 +22,21 @@ function Title(props) {
 }
 
 export default function Home() {
-  const username = 'diegosano';
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+
+  const handleChange = (event) => {
+    const { value } = event.target;
+    setUsername(value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    router.push('/chat');
+  };
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: 'flex',
@@ -87,6 +71,7 @@ export default function Home() {
           {/* Formulário */}
           <Box
             as="form"
+            onSubmit={handleSubmit}
             styleSheet={{
               display: 'flex',
               flexDirection: 'column',
@@ -110,6 +95,8 @@ export default function Home() {
 
             <TextField
               fullWidth
+              value={username}
+              onChange={handleChange}
               textFieldColors={{
                 neutral: {
                   textColor: appConfig.theme.colors.neutrals[200],
@@ -149,24 +136,30 @@ export default function Home() {
               minHeight: '240px',
             }}
           >
-            <Image
-              styleSheet={{
-                borderRadius: '50%',
-                marginBottom: '16px',
-              }}
-              src={`https://github.com/${username}.png`}
-            />
-            <Text
-              variant="body4"
-              styleSheet={{
-                color: appConfig.theme.colors.neutrals[200],
-                backgroundColor: appConfig.theme.colors.neutrals[900],
-                padding: '3px 10px',
-                borderRadius: '1000px',
-              }}
-            >
-              {username}
-            </Text>
+            {username.length > 2 ? (
+              <>
+                <Image
+                  styleSheet={{
+                    borderRadius: '50%',
+                    marginBottom: '16px',
+                  }}
+                  src={`https://github.com/${username}.png`}
+                />
+                <Text
+                  variant="body4"
+                  styleSheet={{
+                    color: appConfig.theme.colors.neutrals[200],
+                    backgroundColor: appConfig.theme.colors.neutrals[900],
+                    padding: '3px 10px',
+                    borderRadius: '1000px',
+                  }}
+                >
+                  {username}
+                </Text>
+              </>
+            ) : (
+              ''
+            )}
           </Box>
           {/* Photo Area */}
         </Box>
