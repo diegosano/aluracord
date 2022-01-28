@@ -32,7 +32,12 @@ export default function Home() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    router.push('/chat');
+    router.push({
+      pathname: '/chat',
+      query: {
+        username,
+      },
+    });
   };
 
   return (
