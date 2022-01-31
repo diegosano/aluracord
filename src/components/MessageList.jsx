@@ -3,7 +3,6 @@ import { Box, Image, Text } from '@skynexui/components';
 import appConfig from '../../config.json';
 
 export function MessageList({ messages }) {
-  console.log(messages);
   return (
     <Box
       tag="ul"
