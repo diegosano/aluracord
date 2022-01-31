@@ -47,9 +47,8 @@ export default function Home() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: appConfig.theme.colors.primary[500],
           backgroundImage:
-            'url(https://virtualbackgrounds.site/wp-content/uploads/2020/11/ama-dablam-mountain-1536x864.jpg)',
+            'url(https://d1lss44hh2trtw.cloudfront.net/assets/article/2022/01/28/pokemon-legends-arceus-pokedex-size_feature.jpg)',
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           backgroundBlendMode: 'multiply',
@@ -73,7 +72,6 @@ export default function Home() {
             backgroundColor: appConfig.theme.colors.neutrals[700],
           }}
         >
-          {/* Formulário */}
           <Box
             as="form"
             onSubmit={handleSubmit}
@@ -87,16 +85,7 @@ export default function Home() {
               marginBottom: '32px',
             }}
           >
-            <Title tag="h1">Boas vindas de volta!</Title>
-            <Text
-              variant="body3"
-              styleSheet={{
-                marginBottom: '32px',
-                color: appConfig.theme.colors.neutrals[300],
-              }}
-            >
-              {appConfig.name}
-            </Text>
+            <Title tag="h1">Welcome to PokeChat!</Title>
 
             <TextField
               fullWidth
@@ -113,7 +102,7 @@ export default function Home() {
             />
             <Button
               type="submit"
-              label="Entrar"
+              label="Sign In"
               fullWidth
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals['000'],
@@ -123,9 +112,6 @@ export default function Home() {
               }}
             />
           </Box>
-          {/* Formulário */}
-
-          {/* Photo Area */}
           <Box
             styleSheet={{
               display: 'flex',
@@ -166,7 +152,6 @@ export default function Home() {
               ''
             )}
           </Box>
-          {/* Photo Area */}
         </Box>
       </Box>
     </>
