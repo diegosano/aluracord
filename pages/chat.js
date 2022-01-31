@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { v4 as uuid } from 'uuid';
 
-import { Box, Text, TextField, Image, Button } from '@skynexui/components';
+import { Box, TextField, Button } from '@skynexui/components';
+import { MessageList } from '../src/components/MessageList';
+import { Header } from '../src/components/Header';
+import { ButtonStickers } from '../src/components/ButtonStickers';
+
+import { supabaseClient } from '../src/services/supabaseClient';
 
 import appConfig from '../config.json';
 
@@ -9,25 +15,79 @@ export default function Chat() {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
+  const router = useRouter();
+  const { username } = router.query;
+
+  const getMessagesInRealTime = (addMessage) => {
+    supabaseClient
+      .from('messages')
+      .on('*', (response) => {
+        addMessage(response.new);
+      })
+      .subscribe();
+  };
+
+  useEffect(() => {
+    let isSubscribed = true;
+
+    const fetchData = async () => {
+      try {
+        const response = await supabaseClient
+          .from('messages')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        const { data } = response;
+
+        if (isSubscribed) {
+          setMessages(data);
+          getMessagesInRealTime((message) => {
+            setMessages((updatedMessages) => {
+              return [message, ...updatedMessages];
+            });
+          });
+        }
+      } catch (error) {
+        alert(error);
+      }
+    };
+
+    fetchData();
+
+    return () => (isSubscribed = false);
+  });
+
   const handleChange = (event) => {
     setMessage(event.target.value);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    addMessage({ id: uuid(), from: 'Diego Sano', text: message });
+    addMessage({ id: uuid(), from: username, text: message });
   };
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      addMessage({ id: uuid(), from: 'Diego Sano', text: message });
+      addMessage({ id: uuid(), from: username, text: message });
     }
   };
 
-  const addMessage = (message) => {
-    setMessages([message, ...messages]);
-    clearTextArea();
+  const addMessage = async (message) => {
+    try {
+      await supabaseClient.from('messages').insert([message]);
+      clearTextArea();
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  const deleteMessage = async (id) => {
+    try {
+      await supabaseClient.from('messages').delete().match({ id });
+    } catch (error) {
+      alert(error);
+    }
   };
 
   const clearTextArea = () => {
@@ -41,10 +101,6 @@ export default function Chat() {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: appConfig.theme.colors.primary[500],
-        backgroundImage: `url(https://virtualbackgrounds.site/wp-content/uploads/2020/11/ama-dablam-mountain-1536x864.jpg)`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundBlendMode: 'multiply',
         color: appConfig.theme.colors.neutrals['000'],
       }}
     >
@@ -76,7 +132,7 @@ export default function Chat() {
             padding: '16px',
           }}
         >
-          <MessageList messages={messages} />
+          <MessageList messages={messages} deleteMessage={deleteMessage} />
 
           <Box
             as="form"
@@ -105,11 +161,35 @@ export default function Chat() {
                 color: appConfig.theme.colors.neutrals[200],
               }}
             />
+
+            <ButtonStickers
+              onStickerClick={(sticker) =>
+                addMessage({
+                  id: uuid(),
+                  from: username,
+                  text: `:sticker:${sticker}`,
+                })
+              }
+            />
+
             <Button
               type="submit"
               label="Send"
               styleSheet={{
-                height: '100%',
+                borderRadius: '10%',
+                minWidth: '50px',
+                minHeight: '50px',
+                fontSize: '20px',
+                marginBottom: '8px',
+                lineHeight: '0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: appConfig.theme.colors.primary[700],
+                hover: {
+                  filter: 'grayscale(0)',
+                },
+                marginLeft: '5px',
               }}
               buttonColors={{
                 contrastColor: appConfig.theme.colors.neutrals['000'],
@@ -121,92 +201,6 @@ export default function Chat() {
           </Box>
         </Box>
       </Box>
-    </Box>
-  );
-}
-
-function Header() {
-  return (
-    <>
-      <Box
-        styleSheet={{
-          width: '100%',
-          marginBottom: '16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Text variant="heading5">Chat</Text>
-        <Button
-          variant="tertiary"
-          colorVariant="neutral"
-          label="Logout"
-          href="/"
-        />
-      </Box>
-    </>
-  );
-}
-
-function MessageList({ messages }) {
-  return (
-    <Box
-      tag="ul"
-      styleSheet={{
-        overflow: 'scroll',
-        display: 'flex',
-        flexDirection: 'column-reverse',
-        flex: 1,
-        color: appConfig.theme.colors.neutrals['000'],
-        marginBottom: '16px',
-      }}
-    >
-      {messages.map((message) => {
-        return (
-          <Text
-            key={message.id}
-            tag="li"
-            styleSheet={{
-              borderRadius: '5px',
-              padding: '6px',
-              marginBottom: '12px',
-              hover: {
-                backgroundColor: appConfig.theme.colors.neutrals[700],
-              },
-            }}
-          >
-            <Box
-              styleSheet={{
-                marginBottom: '8px',
-              }}
-            >
-              <Image
-                styleSheet={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  display: 'inline-block',
-                  marginRight: '8px',
-                }}
-                src={`https://github.com/diegosano.png`}
-              />
-              <Text tag="strong">{message.from}</Text>
-              <Text
-                styleSheet={{
-                  fontSize: '10px',
-                  marginLeft: '8px',
-                  color: appConfig.theme.colors.neutrals[300],
-                }}
-                tag="span"
-              >
-                {new Date().toLocaleDateString()}
-              </Text>
-            </Box>
-            {message.text}
-          </Text>
-        );
-      })}
     </Box>
   );
 }
