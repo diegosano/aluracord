@@ -1,12 +1,8 @@
 import { Box, Button, Image, Text } from '@skynexui/components';
 
-import appConfig from '../config.json';
+import appConfig from '../../config.json';
 
-export function MessageList({ messages, setMessages }) {
-  const deleteMessage = (id) => {
-    setMessages(messages.filter((message) => message.id !== id));
-  };
-
+export function MessageList({ messages, deleteMessage }) {
   return (
     <Box
       tag="ul"
@@ -68,7 +64,11 @@ export function MessageList({ messages, setMessages }) {
                   {new Date().toLocaleDateString()}
                 </Text>
               </Box>
-              {message.text}
+              {message?.text.startsWith(':sticker:') ? (
+                <Image src={message.text.replace(':sticker:', '')} />
+              ) : (
+                message.text
+              )}
             </Text>
             <Button
               colorVariant="dark"
