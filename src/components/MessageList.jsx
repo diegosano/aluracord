@@ -1,8 +1,11 @@
+import { memo } from 'react';
+
 import { Box, Image, Text } from '@skynexui/components';
 
 import appConfig from '../../config.json';
 
-export function MessageList({ messages }) {
+export const MessageList = memo(function MessageList({ messages }) {
+  console.log(messages);
   return (
     <Box
       tag="ul"
@@ -86,4 +89,4 @@ export function MessageList({ messages }) {
       })}
     </Box>
   );
-}
+});
