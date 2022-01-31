@@ -13,8 +13,11 @@ export function ButtonStickers({ onStickerClick }) {
       }}
     >
       <Button
+        buttonColors={{
+          mainColor: appConfig.theme.colors.green,
+        }}
         styleSheet={{
-          borderRadius: '10%',
+          borderRadius: '4px',
           minWidth: '50px',
           minHeight: '50px',
           fontSize: '20px',
@@ -23,10 +26,9 @@ export function ButtonStickers({ onStickerClick }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: appConfig.theme.colors.primary[100],
-          filter: isOpen ? 'grayscale(0)' : 'grayscale(1)',
+          backgroundColor: appConfig.theme.colors.green,
           hover: {
-            filter: 'grayscale(0)',
+            filter: 'brightness(0.7)',
           },
         }}
         label="😋"
@@ -39,7 +41,7 @@ export function ButtonStickers({ onStickerClick }) {
             flexDirection: 'column',
             borderRadius: '5px',
             position: 'absolute',
-            backgroundColor: appConfig.theme.colors.neutrals[800],
+            backgroundColor: appConfig.theme.colors.secondary,
             width: {
               xs: '200px',
               sm: '290px',
@@ -55,7 +57,7 @@ export function ButtonStickers({ onStickerClick }) {
         >
           <Text
             styleSheet={{
-              color: appConfig.theme.colors.neutrals['000'],
+              color: appConfig.theme.colors.white,
               fontWeight: 'bold',
             }}
           >
@@ -86,11 +88,8 @@ export function ButtonStickers({ onStickerClick }) {
                   width: '50%',
                   borderRadius: '5px',
                   padding: '10px',
-                  focus: {
-                    backgroundColor: appConfig.theme.colors.neutrals[600],
-                  },
                   hover: {
-                    backgroundColor: appConfig.theme.colors.neutrals[600],
+                    backgroundColor: appConfig.theme.colors.purple,
                   },
                 }}
               >

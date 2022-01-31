@@ -5,22 +5,6 @@ import { Box, Button, Text, TextField, Image } from '@skynexui/components';
 
 import appConfig from '../config.json';
 
-function Title(props) {
-  const Tag = props.tag || 'h1';
-  return (
-    <>
-      <Tag>{props.children}</Tag>
-      <style jsx>{`
-        ${Tag} {
-          color: ${appConfig.theme.colors.neutrals['000']};
-          font-size: 24px;
-          font-weight: 600;
-        }
-      `}</style>
-    </>
-  );
-}
-
 export default function Home() {
   const router = useRouter();
   const [username, setUsername] = useState('');
@@ -47,11 +31,7 @@ export default function Home() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundImage:
-            'url(https://d1lss44hh2trtw.cloudfront.net/assets/article/2022/01/28/pokemon-legends-arceus-pokedex-size_feature.jpg)',
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          backgroundBlendMode: 'multiply',
+          backgroundColor: appConfig.theme.colors.background,
         }}
       >
         <Box
@@ -69,7 +49,7 @@ export default function Home() {
             padding: '32px',
             margin: '16px',
             boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-            backgroundColor: appConfig.theme.colors.neutrals[700],
+            backgroundColor: appConfig.theme.colors.secondary,
           }}
         >
           <Box
@@ -85,30 +65,58 @@ export default function Home() {
               marginBottom: '32px',
             }}
           >
-            <Title tag="h1">Welcome to PokeChat!</Title>
+            <Text
+              styleSheet={{
+                color: appConfig.theme.colors.white,
+                fontSize: '2rem',
+                fontWeight: '600',
+                marginBottom: '2rem',
+              }}
+              tag="h1"
+            >
+              Welcome to{' '}
+              <Text
+                styleSheet={{
+                  color: appConfig.theme.colors.purple,
+                  fontSize: '3rem',
+                  fontWeight: '600',
+                  fontFamily: 'Abril Text',
+                }}
+                tag="span"
+              >
+                Dracula{' '}
+              </Text>
+              chat!
+            </Text>
 
             <TextField
               fullWidth
               value={username}
               onChange={handleChange}
+              placeholder="Github username"
+              size="lg"
               textFieldColors={{
                 neutral: {
-                  textColor: appConfig.theme.colors.neutrals[200],
-                  mainColor: appConfig.theme.colors.neutrals[900],
-                  mainColorHighlight: appConfig.theme.colors.primary[500],
-                  backgroundColor: appConfig.theme.colors.neutrals[800],
+                  textColor: appConfig.theme.colors.background,
+                  mainColor: appConfig.theme.colors.green,
+                  mainColorHighlight: appConfig.theme.colors.purple,
+                  backgroundColor: appConfig.theme.colors.white,
                 },
               }}
             />
             <Button
               type="submit"
               label="Sign In"
+              variant="primary"
+              size="xl"
               fullWidth
+              styleSheet={{
+                hover: {
+                  filter: 'brightness(0.8)',
+                },
+              }}
               buttonColors={{
-                contrastColor: appConfig.theme.colors.neutrals['000'],
-                mainColor: appConfig.theme.colors.primary[500],
-                mainColorLight: appConfig.theme.colors.primary[400],
-                mainColorStrong: appConfig.theme.colors.primary[600],
+                mainColor: appConfig.theme.colors.green,
               }}
             />
           </Box>
@@ -119,38 +127,38 @@ export default function Home() {
               alignItems: 'center',
               maxWidth: '200px',
               padding: '16px',
-              backgroundColor: appConfig.theme.colors.neutrals[800],
+              backgroundColor: appConfig.theme.colors.background,
               border: '1px solid',
-              borderColor: appConfig.theme.colors.neutrals[999],
+              borderColor: appConfig.theme.colors.purple,
               borderRadius: '10px',
               flex: 1,
               minHeight: '240px',
             }}
           >
-            {username.length > 2 ? (
+            {
               <>
                 <Image
                   styleSheet={{
                     borderRadius: '50%',
                     marginBottom: '16px',
                   }}
-                  src={`https://github.com/${username}.png`}
+                  src={
+                    username.length > 2
+                      ? `https://github.com/${username}.png`
+                      : 'https://draculatheme.com/static/icons/used/pack-1/045-dracula.svg'
+                  }
                 />
                 <Text
                   variant="body4"
                   styleSheet={{
-                    color: appConfig.theme.colors.neutrals[200],
-                    backgroundColor: appConfig.theme.colors.neutrals[900],
-                    padding: '3px 10px',
-                    borderRadius: '1000px',
+                    fontSize: '1.5rem',
+                    color: appConfig.theme.colors.white,
                   }}
                 >
-                  {username}
+                  {username.length > 2 ? username : 'Dracula'}
                 </Text>
               </>
-            ) : (
-              ''
-            )}
+            }
           </Box>
         </Box>
       </Box>

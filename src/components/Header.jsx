@@ -1,5 +1,7 @@
 import { Box, Button, Text } from '@skynexui/components';
 
+import appConfig from '../../config.json';
+
 export function Header() {
   return (
     <>
@@ -12,12 +14,24 @@ export function Header() {
           justifyContent: 'space-between',
         }}
       >
-        <Text variant="heading5">Chat</Text>
+        <Text variant="heading3">Chat</Text>
         <Button
-          variant="tertiary"
-          colorVariant="neutral"
-          label="Logout"
+          label="Sign Out"
           href="/"
+          styleSheet={{
+            borderRadius: '4px',
+            backgroundColor: appConfig.theme.colors.pink,
+            color: appConfig.theme.colors.background,
+            hover: {
+              filter: 'brightness(0.7)',
+            },
+            marginLeft: '5px',
+          }}
+          buttonColors={
+            {
+              mainColor: appConfig.theme.colors.pink,
+            }
+          }
         />
       </Box>
     </>

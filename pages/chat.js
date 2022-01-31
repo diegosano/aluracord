@@ -19,17 +19,15 @@ export default function Chat() {
   const { username } = router.query;
 
   const getMessagesInRealTime = (addMessage) => {
-    supabaseClient
+    return supabaseClient
       .from('messages')
-      .on('*', (response) => {
+      .on('INSERT', (response) => {
         addMessage(response.new);
       })
       .subscribe();
   };
 
   useEffect(() => {
-    let isSubscribed = true;
-
     const fetchData = async () => {
       try {
         const response = await supabaseClient
@@ -39,14 +37,7 @@ export default function Chat() {
 
         const { data } = response;
 
-        if (isSubscribed) {
-          setMessages(data);
-          getMessagesInRealTime((message) => {
-            setMessages((updatedMessages) => {
-              return [message, ...updatedMessages];
-            });
-          });
-        }
+        setMessages(data);
       } catch (error) {
         alert(error);
       }
@@ -54,8 +45,16 @@ export default function Chat() {
 
     fetchData();
 
-    return () => (isSubscribed = false);
-  });
+    const subscription = getMessagesInRealTime((message) => {
+      setMessages((updatedMessages) => {
+        return [message, ...updatedMessages];
+      });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const handleChange = (event) => {
     setMessage(event.target.value);
@@ -73,18 +72,17 @@ export default function Chat() {
     }
   };
 
-  const addMessage = async (message) => {
+  const addMessage = async (newMessage) => {
     try {
-      await supabaseClient.from('messages').insert([message]);
-      clearTextArea();
-    } catch (error) {
-      alert(error);
-    }
-  };
+      const messageAlreadyExists = messages.find(
+        (message) => message.id === newMessage.id
+      );
 
-  const deleteMessage = async (id) => {
-    try {
-      await supabaseClient.from('messages').delete().match({ id });
+      if (!messageAlreadyExists) {
+        await supabaseClient.from('messages').insert([newMessage]);
+      }
+
+      clearTextArea();
     } catch (error) {
       alert(error);
     }
@@ -100,8 +98,8 @@ export default function Chat() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: appConfig.theme.colors.primary[500],
-        color: appConfig.theme.colors.neutrals['000'],
+        backgroundColor: appConfig.theme.colors.background,
+        color: appConfig.theme.colors.white,
       }}
     >
       <Box
@@ -111,9 +109,9 @@ export default function Chat() {
           flex: 1,
           boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
           borderRadius: '5px',
-          backgroundColor: appConfig.theme.colors.neutrals[700],
+          backgroundColor: appConfig.theme.colors.secondary,
           height: '100%',
-          maxWidth: '95%',
+          maxWidth: '1080px',
           maxHeight: '95vh',
           padding: '32px',
         }}
@@ -126,13 +124,13 @@ export default function Chat() {
             display: 'flex',
             flex: 1,
             height: '80%',
-            backgroundColor: appConfig.theme.colors.neutrals[600],
+            backgroundColor: appConfig.theme.colors.background,
             flexDirection: 'column',
             borderRadius: '5px',
             padding: '16px',
           }}
         >
-          <MessageList messages={messages} deleteMessage={deleteMessage} />
+          <MessageList messages={messages} />
 
           <Box
             as="form"
@@ -156,9 +154,9 @@ export default function Chat() {
                 resize: 'none',
                 borderRadius: '5px',
                 padding: '6px 8px',
-                backgroundColor: appConfig.theme.colors.neutrals[800],
+                backgroundColor: appConfig.theme.colors.background,
                 marginRight: '12px',
-                color: appConfig.theme.colors.neutrals[200],
+                color: appConfig.theme.colors.white,
               }}
             />
 
@@ -176,7 +174,7 @@ export default function Chat() {
               type="submit"
               label="Send"
               styleSheet={{
-                borderRadius: '10%',
+                borderRadius: '4px',
                 minWidth: '50px',
                 minHeight: '50px',
                 fontSize: '20px',
@@ -185,17 +183,14 @@ export default function Chat() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: appConfig.theme.colors.primary[700],
+                backgroundColor: appConfig.theme.colors.purple,
                 hover: {
-                  filter: 'grayscale(0)',
+                  filter: 'brightness(0.7)',
                 },
                 marginLeft: '5px',
               }}
               buttonColors={{
-                contrastColor: appConfig.theme.colors.neutrals['000'],
-                mainColor: appConfig.theme.colors.primary[500],
-                mainColorLight: appConfig.theme.colors.primary[400],
-                mainColorStrong: appConfig.theme.colors.primary[600],
+                mainColor: appConfig.theme.colors.purple,
               }}
             />
           </Box>
